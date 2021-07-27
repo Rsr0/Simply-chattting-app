@@ -1,5 +1,6 @@
 # Simply-chattting-app
-Simple Real Time Chat application using Flask
+Simple Real Time Chat application using ![](http://ForTheBadge.com/images/badges/made-with-python.svg)
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white) & Socket.io
 
 ### Installation
 
