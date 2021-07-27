@@ -1,0 +1,71 @@
+<!-- Chat Window Page -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simply Chit-Chat</title>
+	
+    <!--Link to CSS -->
+    <link href="../static/bootstrap.min.css" rel="stylesheet" />
+    <link href="../static/style.css" rel="stylesheet" />
+    
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>  
+    <script type="text/javascript" charset="utf-8">
+	    var socket;
+        $(document).ready(function(){
+            // connect with chat page using localhost as domain
+            socket = io.connect('http://' + document.domain + ':' + location.port + '/chat'); 
+            socket.on('connect', function() {
+                socket.emit('join', {});
+            });
+            // user joins
+            socket.on('status', function(data) {
+                // copy from text area
+                $('#chat').val($('#chat').val() + '<' + data.msg + '>\n');
+                // move cursor to top i.e. show latest chats
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            });
+            // Display chat message
+            socket.on('message', function(data) {
+                $('#chat').val($('#chat').val() + data.msg + '\n');
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            });
+
+            // Text handler for send button
+            $('#send').click(function(e) {
+                    text = $('#text').val();
+                    $('#text').val('');
+                    socket.emit('text', {msg: text});
+            });
+        });
+
+        function leave_room() {
+            socket.emit('left', {}, function() {
+                socket.disconnect();
+                // go back to the login page
+                window.location.href = "{{ url_for('index') }}";
+            });
+        }
+    </script>
+
+</head>
+<body class="text-center">
+	<div class="chatwindow">
+    	<h2>Simply Chit-Chat</h2>
+    	<h2> Room: {{session['room']}}</h2><br>
+    	
+        <!-- Displays messages and status of chat window -->
+        <textarea id="chat" cols="70" rows="10" placeholder="No messages yet. Start one..."></textarea><br><br>
+    	
+        <!-- Message on room -->
+        <input type="text" id="text" size="60" placeholder="Enter your message here" />
+        <button type="button" id="send" class="btn btn-success">SEND</button><br><br> 
+        
+        <!-- Leaving Chat room -->
+        <center><button type="button" class="btn btn-danger" onclick=leave_room()>Leave this Chat</button></center>
+	</div>
+
+</body>
+</html>
